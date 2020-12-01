@@ -1,0 +1,219 @@
+%% -*- coding: utf-8 -*-
+\documentclass[12pt,a4paper]{scrartcl} 
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{ dsfont }
+
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks,
+  pdftitle={The title of your document},
+  pdfauthor={Your name},
+  allcolors=[RGB]{000 000 000}}
+
+\begin{document}
+\begin{titlepage}
+  \begin{center}
+
+    Санкт-Петербургский политехнический университет Петра Великого
+
+    \vspace{0.25cm}
+    
+    Институт прикладной математики и механики
+    
+    Кафедра «Прикладная математика»
+    \vfill
+
+	\vspace{0.25cm}
+	    Отчёт\\
+	по лабораторной работе №1\\
+	по дисциплине\\
+	«Вычислительные комплексы»
+
+  \bigskip
+
+\end{center}
+\vfill
+
+\newlength{\ML}
+\settowidth{\ML}{«\underline{\hspace{0.7cm}}» \underline{\hspace{2cm}}}
+\hfill\begin{minipage}{0.4\textwidth}
+  Выполнил студент\\ В.\,А.~Рыженко\\
+\end{minipage}%
+\bigskip
+
+\hfill\begin{minipage}{0.4\textwidth}
+  Проверил:\\
+к.ф.-м.н., доцент\\
+Баженов Александр Николаевич\\
+\end{minipage}%
+\vfill
+
+\begin{center}
+  Санкт-Петербург, 2020 г.
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+%\listoffigures
+\newpage
+
+
+\section{Постановка задачи}
+
+\subsection{Задача 1}
+
+Имеем 2х2 матрицу A~\eqref{eq:A_base}
+
+\begin{equation}\label{eq:A_base}
+\centering
+\begin{pmatrix}
+1 & 1\\
+1.1 & 1
+\end{pmatrix}
+\end{equation}
+
+Пусть все элементы матрицы $a_{ij}$ имеют теперь радиус $\varepsilon$:
+
+\begin{equation}
+\centering
+rad \textbf{a}_{ij} = \varepsilon.
+\end{equation}
+
+Получаем 
+
+\begin{equation}\label{eq:A_mod}
+\centering
+\begin{pmatrix}
+[1 - \varepsilon, 1 + \varepsilon] & [1 - \varepsilon, 1 + \varepsilon]\\
+[1.1 - \varepsilon, 1.1 + \varepsilon] & [1 - \varepsilon, 1 + \varepsilon]
+\end{pmatrix}
+\end{equation}
+
+Определить, при каком радиусе $\varepsilon$ матрица ~\eqref{eq:A_mod} содержит особенные матрицы.
+
+\subsection{Задача 2}
+
+Имеем nхn матрицу A~\eqref{eq:A1}
+$\begin{pmatrix}\label{eq:A1}
+1 & [0, \varepsilon] & ... & [0, \varepsilon] \\
+[0, \varepsilon] & 1 & ... & [0, \varepsilon] \\
+&...&... \\
+[0, \varepsilon] & [0, \varepsilon]& ... & 1
+\end{pmatrix}
+$
+Определить, при каком радиусе $\varepsilon$ матрица ~\eqref{eq:A1} содержит особенные матрицы.
+
+\section {Теория}
+
+\subsection {Определение}
+
+Интервальная матрица $\textbf{A} \in \mathds{I} \mathds{R}^{nxn} $называется неособенной, если
+неособенны все точечные матрицы$ A \in \textbf{A}$. Интервальная матрица называется особенной, если она содержит
+особенную точечную матрицу.
+
+\subsection {Теорема}\label{Theorem}
+
+Теорема. Пусть интервальная матрица $\textbf{A} \in \mathds{I} \mathds{R}^{nxn}$ такова, что её
+середина $mid \textbf{A}$ неособенна и 
+
+\begin{equation}
+\centering
+\max_{1\leq j \leq n}(rad  \textbf{A} \cdot |(mid( \textbf{A})^{-1}|)_{jj} \geq 1
+\end{equation}
+
+Тогда \textbf{A} — особенная.
+
+\subsection {Теорема. (признак Бекка).}\label{Bek}
+
+Пусть интервальная матрица$ \textbf{A} \in \mathds{I} \mathds{R}^{nxn} $такова, что ее середина $mid \textbf{A}$ неособенна и 
+
+\begin{equation}
+\centering
+\rho (rad  \textbf{A} \cdot (mid( \textbf{A})^{-1}) < 1
+\end{equation}
+
+Тогда \textbf{A} неособенна.
+
+\section {Реализация}
+Лабораторная работа выполнена с помощью встроенных средств языка программирования Python в среде разработки Visual Code. Исходный код лабораторной
+работы приведён в приложении.
+ 
+\section{Результаты}
+
+\subsection{Задача 1}
+
+Для решения задачи воспользуемся \ref{Theorem}. Для $\textbf{A}$ имеем
+
+\begin{equation*}
+\centering
+mid \textbf{A} = 
+\begin{pmatrix}
+1 & 1\\
+1.1 & 1
+\end{pmatrix}
+\end{equation*}
+
+\begin{equation*}
+\centering
+rad \textbf{A} = \begin{pmatrix}
+\varepsilon & \varepsilon\\
+\varepsilon & \varepsilon
+\end{pmatrix}
+\end{equation*}
+
+$det (mid \textbf{A}) \neq 0 $, следовательно матрица удовлетворяет условию теоремы.
+
+Получаем следующее:
+	
+\begin{equation*}
+\centering
+rad  \textbf{A} \cdot (mid( \textbf{A})^{-1} =
+ \begin{pmatrix}
+\varepsilon & \varepsilon\\
+\varepsilon & \varepsilon
+\end{pmatrix}
+ \cdot
+ \begin{pmatrix}
+10 & 10\\
+11 & 10
+\end{pmatrix}
+ = 
+ \begin{pmatrix}
+21 \varepsilon & 20 \varepsilon\\
+21 \varepsilon & 20 \varepsilon
+\end{pmatrix}
+\end{equation*}
+
+Отсюда получаем, что матрица будет особенной при $\varepsilon \geq \frac{1}{21}$
+\newline
+
+Проверим с помощью программы определитель, получим следующее:
+\begin{flushleft}
+  Enter  eps:\\0.048\\det = (-0.2968, 0.0968)
+\end{flushleft}
+Уточним нижнюю границу, сдвигая $\varepsilon$ на $\Delta \varepsilon = -0.001$ю
+Получим слудующий результат:
+\begin{flushleft}
+end eps = 0.025\\det = (-0.2025, 0.0025)
+\end{flushleft}
+
+\subsection{Задача 2}
+
+Рассмотри решение на примере матрицы 3х3. Применим криетрий Бека\ref{Bek} и получим следующий результат:
+\begin{flushleft}
+end eps = 1.29\\pho = 4.657\\det = (-0.6641, 1)
+\end{flushleft}
+Уточним полученное значение аналогично прошлой задаче, получим:
+\begin{flushleft}
+end eps = 0.58\\det = (-0.0092, 1.3902)
+\end{flushleft}
+
+\section{Приложения}
+Репозиторий на GitHub с релизацией: \href{https://github.com/WiillyWonka/Intervals}{github.com}.
+\end{document}
