@@ -1,0 +1,217 @@
+%% -*- coding: utf-8 -*-
+\documentclass[12pt,a4paper]{scrartcl} 
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{ dsfont }
+
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks,
+  pdftitle={The title of your document},
+  pdfauthor={Your name},
+  allcolors=[RGB]{000 000 000}}
+
+\begin{document}
+\begin{titlepage}
+  \begin{center}
+
+    Санкт-Петербургский политехнический университет Петра Великого
+
+    \vspace{0.25cm}
+    
+    Институт прикладной математики и механики
+    
+    Кафедра «Прикладная математика»
+    \vfill
+
+	\vspace{0.25cm}
+	    Отчёт\\
+	по лабораторной работе №4\\
+	по дисциплине\\
+	«Вычислительные комплексы»
+
+  \bigskip
+
+\end{center}
+\vfill
+
+\newlength{\ML}
+\settowidth{\ML}{«\underline{\hspace{0.7cm}}» \underline{\hspace{2cm}}}
+\hfill\begin{minipage}{0.4\textwidth}
+  Выполнил студент\\ В.\,А.~Рыженко\\
+\end{minipage}%
+\bigskip
+
+\hfill\begin{minipage}{0.4\textwidth}
+  Проверил:\\
+к.ф.-м.н., доцент\\
+Баженов Александр Николаевич\\
+\end{minipage}%
+\vfill
+
+\begin{center}
+  Санкт-Петербург, 2020 г.
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+%\listoffigures
+\newpage
+
+
+\section{Постановка задачи}
+
+Требуется решить ИСЛАУ с применением аппарата линейного программирования для проведения регуляризации рассматриваемой системы. 
+
+
+\section{Конкретизация задачи и метод решения}
+При решении данной задачи имеет рассмотреть ИСЛАУ $Ax=b$ точечной марицей $A$ и
+интервальной правой частью $\textbf{b}$ при которых система не имеет решений до проведения регуляризации. В данной работе выбрана несовместная ИСЛАУ:
+\begin{equation}
+    \begin{pmatrix}
+    2 && 3 && 4 \\
+    2.2 && 3 && 4 \\
+    9 && 0 && 0 \\
+    \end{pmatrix} \cdot x = 
+    \begin{pmatrix}
+    [2; 4] \\
+    [7; 9] \\
+    [-1; 1] \\
+    \end{pmatrix}
+    \label{islau}
+\end{equation}
+В первую очередь с помощью распознающего функционала $Tol(x)$ проверяется отсутствие решений у данной системы. С помощью программы
+tolsolvty были найдены максимум функционала распознающего функционала $maxTol$ и
+значение аргумента, в которой он достигался $argmaxTol$:
+\begin{equation}
+    maxTol = -1.4725;
+    argmaxTol = \begin{pmatrix}
+    0.2747 \\
+    0.5907 \\
+    0.7876
+    \end{pmatrix}
+    \label{results}
+\end{equation}
+Поскольку $maxTol < 0$, допусковое множество ИСЛАУ пусто и система несовместна. \\
+Далее для получения решения проводится $l_{1}$-регуляризация, заключающуюся в изменении радиусов компонент вектора $\textbf{b}$ их поэлементным домножением на вектор масштабирующих множителей $\omega$:
+\begin{equation}
+    \textbf{b} = \begin{pmatrix}
+    [\text{mid} b_{1} - \text{rad} b_{1}; \text{mid} b_{1} + \text{rad} b_{1}] \\
+    [\text{mid} b_{2} - \text{rad} b_{2}; \text{mid}b_{2} + \text{rad} b_{2}] \\
+    [\text{mid} b_{3} - \text{rad} b_{3}; \text{mid} b_{3} + \text{rad} b_{3}] \\
+    \end{pmatrix} \rightarrow \tilde{\textbf{b}} = \begin{pmatrix}
+    [\text{mid} b_{1} - \omega_{1}\text{rad} b_{1}; \text{mid} b_{1} + \omega_{1}\text{rad} b_{1}] \\
+    [\text{mid} b_{2} - \omega_{2}\text{rad} b_{2}; \text{mid} b_{2} + \omega_{2}\text{rad} b_{2}] \\
+    [\text{mid} b_{3} - \omega_{3}\text{rad} b_{3}; \text{mid} b_{3} + \omega_{3}\text{rad} b_{3}] \\
+    \end{pmatrix}
+    \label{after_l1_reg}
+\end{equation}
+При этом масштабирующие множители подбираются так, чтобы регуляризованная ИСЛАУ $A \cdot x = \tilde{\textbf{b}}$ стала разрешима, но сумма этих множителей $\sum_{i}{\omega_{i}}$ была минимально возможной. \\
+Накладывая на масштабирующие множители естественное требование их неотрицательности, и введя вектор $u = \begin{pmatrix}x \\ \omega\end{pmatrix}$, можно записать полученную задачу в виде:
+\begin{equation}
+    \begin{cases}
+    u_{4, 5, 6} \geq 0 \\
+    c \cdot u = (0,0,0,1,1,1) \cdot u= (0,0,0,1,1,1) \cdot \begin{pmatrix}
+    x_{1} \\ x_{2} \\ x_{3} \\ \omega_{1} \\ \omega_{2} \\ \omega_{3}
+    \end{pmatrix} = \sum_{i}{\omega_{i}} = \underset{u}{min} \\
+    C \cdot u \leq r, \text{где } C = \begin{pmatrix}
+    -A & -\text{diag}(\text{rad}(\textbf{b})) \\
+    A & -\text{diag}(\text{rad}(\textbf{b}))
+    \end{pmatrix}, r = \begin{pmatrix}
+    -mid(\textbf{b}) \\
+    mid(\textbf{b})
+    \end{pmatrix}
+    \end{cases}
+    \label{system}
+\end{equation}
+Полученная задача и решается линейным программированием с применением стандартной
+функции linprog пакета scipy.optimize. В результате решения определяются одновременно и
+необходимые масштабирующие множители, и соответствующее им появившееся в результате
+регуляризации решения ИСЛАУ.
+
+
+\section {Реализация}
+Лабораторная работа выполнена с помощью встроенных средств языка программирования Matlab и Python. Также используется оптимизатор scipy.optimize на Python с различными методами решения задачи линейного программирования.
+Для нахождения экстремума распознающего функционала использована программа tolsolvty для Python.
+
+\section {Результаты}
+
+Имеем rad$(\textbf{b}) = 1, $mid$(\textbf{b}) = \begin{pmatrix}3 & 8 & 0\end{pmatrix}$.\\
+По:
+\begin{equation}
+    C = \begin{pmatrix}
+    -2 & -3 & -4 & -1 & 0 & 0 \\
+    -2.2 & -3 & -4 & 0 & -1 & 0 \\
+    -9 & 0 & 0 & 0 & 0 & -1 \\
+    2 & 3 & 4 & -1 & 0 & 0 \\
+    2.2 & 3 & 4 & 0 & -1 & 0 \\
+    9 & 0 & 0 & 0 & 0 & -1 \\
+    \end{pmatrix};
+    r = \begin{pmatrix}-3 & -8 & 0 & 3 & 8 & 0\end{pmatrix}
+    \label{after_regul}
+\end{equation}
+В результате применения стандартного linprog для решения задачи линейного программирования с использованием значений из (\ref{after_regul}) без дополнительных ограничений получны следующие результаты:
+\begin{itemize}
+    \item Решение регуляризованной ИСЛАУ методом method = ’interior-point’:
+    \begin{equation}
+        x \approx \begin{pmatrix}
+        0 \\ 0.6387 \\ 0.8661
+        \end{pmatrix},
+        \omega \approx \begin{pmatrix}
+        2.3806 \\2.6194 \\ 0
+        \end{pmatrix}
+        \label{res_ip}
+    \end{equation}
+     \item Решение регуляризованной ИСЛАУ методом method = ’simplex’:
+    \begin{equation}
+        x \approx \begin{pmatrix}
+        0 \\ 0 \\ 2.0
+        \end{pmatrix},
+        \omega \approx \begin{pmatrix}
+        5 \\ 0 \\ 0 
+        \end{pmatrix}
+        \label{res_simpl}
+    \end{equation}
+\end{itemize}
+
+Можно отметить, что сумма масштабирующих коэффициентов совпала и равна 5. \\
+Также, первые компоненты вектора решений оказались равны 0, что  наводит на мысль, что рассматриваемая задача может иметь нетривиальное множество одинаково хороших решений. Попробуем наложить дополнительные ограничения. 
+\begin{equation}
+x_{i min} \leq x_i \leq x_{i max}
+\end{equation}
+
+В результате сначала было обнаружено, что если установить нижнюю границу возможных
+значений $x_1$, большую, чем ноль , $x_{1min}$> 0, то условная оптимизация сходится к $x_1 = x_{1min}$, а значение суммы масштабирующих коэффициентов увеличивается и становится больше 5. Это говорит о том, что решение c $x_1 = 0$ действительно является оптимальным и устойчивым.
+
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics{points_changing.png}
+%    \caption{Изменения нижней границы одной координат решения в обоих методах}
+%    \label{fig:change2}
+%\end{figure}
+%Стоит также отметить, что в случае изменения границ только в симплекс-методе, в определенный момент решения совпадают, причем по всем компонентам(в точке $(1.4 0.5807 0.6344)^{T}$).
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=10cm, height=8cm]{2-nd simplex.png}
+%    \caption{Изменение нижней границы второй координаты вектора решений для симплекс-метода}
+%    \label{fig:simplex_change}
+%\end{figure}
+%В случае, если вносить изменения в границы 2-х компонент решения, будет заметно, что с той же точки решения будут совпадать:
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics{points_b_changing.png}
+%    \caption{Изменение нижней границы обеих компонент вектора решений в обоих методах}
+%    \label{fig:all_change}
+%\end{figure}
+%Таким образом, можно заключить, что существует множество  решений поставленной задачи линейного программирования, соответствующее фиксированному значению $x_{1} = 1.4$ и
+%целой полосе возможных значений по остальным компонентам.
+
+
+\section{Приложения}
+Репозиторий на GitHub с релизацией: \href{https://github.com/WiillyWonka/Intervals}{github.com}.
+\end{document}
