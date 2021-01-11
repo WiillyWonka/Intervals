@@ -1,4 +1,4 @@
-clc
+clear all; clc
 
 A_inf = [
     4 -9 0 2 5 -23 15;
@@ -89,30 +89,59 @@ tau_values = 0.5:0.001:1.0;
 % end
 % close(writerObj);
 % figure;
+
+g = 8.6;
+A(7, 7, 1) = g;
+A_inf(7, 7) = g;
+[x0, ni] = subdiff(A, b, 0.9, true, false);
+
+% g1 = 8.5;
+% A(7, 7, 1) = g1;
+% A_inf(7, 7) = g1;
+% [x, ni] = subdiff(A, b, 0.9, true, true, x);
 % 
+% x_inf = x(1:length(x)/2);
+% x_sup = x(length(x)/2 + 1:length(x));
+% 
+% x1 = zeros(2*length(x_inf), 1);
+% for i=1:length(x_inf)
+%    x1(2*i - 1) = x_inf(i);
+%    x1(2*i) = x_sup(i);
+% end
+
+% figure
+% hold on
+% [c_inf, c_sup] = dot(A_inf, A_sup, x_inf, x_sup);
+% plot(c_inf)
+% plot(c_sup)
+% plot(b_inf)
+% plot(b_sup)
+% 
+% legend('Ax_{inf}', 'Ax_{sup}', 'b_{inf}', 'b_{sup}')
+
 % % 3D plot
-g = 7.90:0.005:9.4;
-tau_values = 0.88:0.001:1.0;
+g = 7.50:0.01:9.4;
+tau_values = 0.75:0.01:1.0;
 [T, G] = meshgrid(tau_values, g);
 N = zeros(size(T));
 for i = 1:size(T, 1)
     for j = 1:size(T, 2)
         A(7, 7, 1) = G(i, j);
-        [x, ni] = subdiff(A, b, T(i, j), false);
+        [x, ni] = subdiff(A, b, 0.9, false, true, x0);
         N(i, j) = ni;
 %         fprintf('%i\n', 100*(i + j)/(size(T, 1) + size(T, 2)))
     end
-    disp(i)
+%     disp(i)
 end
-
-for i=1:size(N, 1)
-    for j=1:size(N,2)
-        if (N(i, j) == 1000)
-            N(i, j) = 0;
-        end
-    end
-end
-
+% 
+% for i=1:size(N, 1)
+%     for j=1:size(N,2)
+%         if (N(i, j) == 1000)
+%             N(i, j) = 0;
+%         end
+%     end
+% end
+% 
 % heatmap(tau_values, g, N)
 imagesc(tau_values, g, N)
 xlabel('$\tau$', 'interpreter', 'latex');

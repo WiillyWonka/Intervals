@@ -1,4 +1,4 @@
-function [x, ni] = subdiff(A, b, tau, flag_print)
+function [x, ni] = subdiff(A, b, tau, flag_print, begin_solve, x0)
 
 IterLim = 1000; 
 Eps = 1.e-7;     
@@ -49,6 +49,10 @@ for i = 1:Dim
 end
   
 xx = F\xx;
+
+if (begin_solve)
+    xx = x0;
+end
 
 ni = 0;   r = Inf;   q = 1;
 
